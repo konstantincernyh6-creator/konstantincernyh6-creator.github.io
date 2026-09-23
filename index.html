@@ -2,10 +2,88 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Мой первый сайт</title>
+    <title>Суперкары</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0f1015;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        h1 {
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+            margin-bottom: 30px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1000px;
+        }
+        .card {
+            background: #1a1c23;
+            border: 1px solid #333;
+            border-radius: 12px;
+            width: 280px;
+            overflow: hidden;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: #00ffcc;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+        }
+        .card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        .info {
+            padding: 15px;
+        }
+        .info h3 {
+            margin: 0 0 10px;
+            color: #ff007f;
+        }
+        .info p {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+    </style>
 </head>
 <body>
-    <h1>Привет, мир!</h1>
-    <p>Это моя первая страница на языке HTML.</p>
+    <h1>Легендарные Мощные Машины</h1>
+    <div class="container">
+        <div class="card">
+            <img src="https://110km.ru/attachment/ce282cc35fe0f5c151b0c00f31c151df90cf0ed3/proportional/945x/Nissan.png" alt="Car">
+            <div class="info">
+                <h3>Neon GT</h3>
+                <p>Быстрый спорткар с футуристичным дизайном и невероятной динамикой разгона.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://autotuni.ru/uploads/posts/2013-06/1371826471_1.jpg" alt="Car">
+            <div class="info">
+                <h3>Viper R</h3>
+                <p>Трековый зверь с ревом мощного мотора и агрессивным аэродинамическим обвесом.</p>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://cdn.top-tuning.ru/w500/upload/images/news/109189/porsche_cayman_3.png" alt="Car">
+            <div class="info">
+                <h3>Shadow X</h3>
+                <p>Черная молния для ночных дорог. Совершенство стиля и высоких технологий.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
