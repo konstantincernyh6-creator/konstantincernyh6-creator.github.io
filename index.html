@@ -96,21 +96,23 @@
 
     <div class="container">
         <div class="card">
-            <img src="https://110km.ru/attachment/ce282cc35fe0f5c151b0c00f31c151df90cf0ed3/proportional/945x/Nissan.png" alt="Car">
+            <img src="https://110km.ru" alt="Car">
             <div class="info">
                 <h3>Neon GT</h3>
                 <p>Быстрый спорткар с футуристичным дизайном и невероятной динамикой разгона.</p>
             </div>
         </div>
+
         <div class="card">
-            <img src="https://autotuni.ru/uploads/posts/2013-06/1371826471_1.jpg" alt="Car">
+            <img src="https://autotuni.ru" alt="Car">
             <div class="info">
                 <h3>Viper R</h3>
                 <p>Трековый зверь с ревом мощного мотора и агрессивным аэродинамическим обвесом.</p>
             </div>
         </div>
+
         <div class="card">
-            <img src="https://cdn.top-tuning.ru/w500/upload/images/news/109189/porsche_cayman_3.png" alt="Car">
+            <img src="https://top-tuning.ru" alt="Car">
             <div class="info">
                 <h3>Shadow X</h3>
                 <p>Черная молния для ночных дорог. Совершенство стиля и высоких технологий.</p>
@@ -118,62 +120,68 @@
         </div>
     </div>
 
-<script type="module">
-    // ИСПРАВЛЕНО: Указаны точные, полные и рабочие CDN ссылки для Firebase версии 10.x
-    import { initializeApp } from "https://gstatic.com";
-    import { 
-        getAuth, 
-        signInWithPopup, 
-        GoogleAuthProvider, 
-        signOut, 
-        onAuthStateChanged 
-    } from "https://gstatic.com";
+    <script type="module">
+        // ИСПРАВЛЕНО: Указаны точные, абсолютные CDN-пути к конкретным файлам библиотек Firebase v10
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            signOut, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDppXugKlNCW9eywWLJ65plk8k0Zq2wDxA",
-        authDomain: "kode-1-76934.firebaseapp.com",
-        projectId: "kode-1-76934",
-        storageBucket: "kode-1-76934.firebasestorage.app",
-        messagingSenderId: "872202056385",
-        appId: "1:872202056385:web:9c798e72ee00b703099a40",
-        measurementId: "G-CWCMHJGJM0"
-    };
+        // Конфигурация вашего проекта Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDppXugKlNCW9eywWLJ65plk8k0Zq2wDxA",
+            authDomain: "://firebaseapp.com",
+            projectId: "kode-1-76934",
+            storageBucket: "kode-1-76934.firebasestorage.app",
+            messagingSenderId: "872202056385",
+            appId: "1:872202056385:web:9c798e72ee00b703099a40",
+            measurementId: "G-CWCMHJGJM0"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+        // Инициализация сервисов
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
-    const loginBtn = document.getElementById('google-login');
-    const userProfile = document.getElementById('user-profile');
+        const loginBtn = document.getElementById('google-login');
+        const userProfile = document.getElementById('user-profile');
 
-    // Логика кнопки (Вход / Выход)
-    loginBtn.addEventListener('click', () => {
-        if (!auth.currentUser) {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    console.log("Успешный вход:", result.user);
-                })
-                .catch((error) => {
-                    console.error("Ошибка авторизации:", error.message);
-                    alert("Не удалось войти: " + error.message);
+        // Логика кнопки (Вход / Выход)
+        loginBtn.addEventListener('click', () => {
+            if (!auth.currentUser) {
+                signInWithPopup(auth, provider)
+                    .then((result) => {
+                        console.log("Успешный вход:", result.user);
+                    })
+                    .catch((error) => {
+                        console.error("Ошибка авторизации:", error.code, error.message);
+                        alert("Не удалось войти: " + error.message);
+                    });
+            } else {
+                signOut(auth).then(() => {
+                    console.log("Пользователь вышел");
+                }).catch((error) => {
+                    console.error("Ошибка при выходе:", error);
                 });
-        } else {
-            signOut(auth).then(() => {
-                console.log("Пользователь вышел");
-            });
-        }
-    });
+            }
+        });
 
-    // Отслеживание состояния пользователя (Вошел или Вышел)
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            userProfile.textContent = `Привет, ${user.displayName}!`;
-            loginBtn.textContent = "Выйти";
-            loginBtn.style.backgroundColor = "#d9534f"; // Меняем цвет на красный при выходе
-        } else {
-            userProfile.textContent = "";
-            loginBtn.textContent = "Войти через Google";
-            loginBtn.style.backgroundColor = "#4285F4"; // Возвращаем синий бренд-цвет Google
-        }
-    });
-</script>
+        // Отслеживание состояния пользователя (Вошел или Вышел)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userProfile.textContent = `Привет, ${user.displayName}!`;
+                loginBtn.textContent = "Выйти";
+                loginBtn.style.backgroundColor = "#d9534f";
+            } else {
+                userProfile.textContent = "";
+                loginBtn.textContent = "Войти через Google";
+                loginBtn.style.backgroundColor = "#4285F4";
+            }
+        });
+    </script>
+</body>
+</html>
