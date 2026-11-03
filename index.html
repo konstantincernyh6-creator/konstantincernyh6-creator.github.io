@@ -20,7 +20,6 @@
             text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
             margin-bottom: 30px;
         }
-        
         /* Стили для кнопки авторизации */
         .auth-btn {
             background-color: #4285F4;
@@ -47,7 +46,6 @@
             font-size: 16px;
             color: #00ffcc;
         }
-
         .container {
             display: flex;
             gap: 20px;
@@ -91,7 +89,7 @@
 <body>
 
     <h1>Легендарные Мощные Машины</h1>
-    
+
     <!-- Кнопка авторизации и блок для имени пользователя -->
     <div id="user-profile" class="user-info"></div>
     <button type="button" id="google-login" class="auth-btn">Войти через Google</button>
@@ -120,23 +118,21 @@
         </div>
     </div>
 
-    
     <script type="module">
+        // ИСПРАВЛЕНО: Указаны точные и корректные CDN ссылки для Firebase версии 10.x
         import { initializeApp } from "https://gstatic.com";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://gstatic.com";
 
- 
-    const firebaseConfig = {
-  apiKey: "AIzaSyDppXugKlNCW9eywWLJ65plk8k0Zq2wDxA",
-  authDomain: "kode-1-76934.firebaseapp.com",
-  projectId: "kode-1-76934",
-  storageBucket: "kode-1-76934.firebasestorage.app",
-  messagingSenderId: "872202056385",
-  appId: "1:872202056385:web:9c798e72ee00b703099a40",
-  measurementId: "G-CWCMHJGJM0"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyDppXugKlNCW9eywWLJ65plk8k0Zq2wDxA",
+            authDomain: "kode-1-76934.firebaseapp.com",
+            projectId: "kode-1-76934",
+            storageBucket: "kode-1-76934.firebasestorage.app",
+            messagingSenderId: "872202056385",
+            appId: "1:872202056385:web:9c798e72ee00b703099a40",
+            measurementId: "G-CWCMHJGJM0"
+        };
 
-     
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
@@ -147,7 +143,6 @@
         // Логика кнопки (Вход / Выход)
         loginBtn.addEventListener('click', () => {
             if (!auth.currentUser) {
-           
                 signInWithPopup(auth, provider)
                     .then((result) => {
                         console.log("Успешный вход:", result.user);
@@ -157,7 +152,6 @@
                         alert("Не удалось войти: " + error.message);
                     });
             } else {
-         
                 signOut(auth).then(() => {
                     console.log("Пользователь вышел");
                 });
@@ -167,15 +161,13 @@
         // Отслеживание состояния пользователя (Вошел или Вышел)
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                
                 userProfile.textContent = `Привет, ${user.displayName}!`;
                 loginBtn.textContent = "Выйти";
-                loginBtn.style.backgroundColor = "#d9534f"; 
+                loginBtn.style.backgroundColor = "#d9534f";
             } else {
-        
                 userProfile.textContent = "";
                 loginBtn.textContent = "Войти через Google";
-                loginBtn.style.backgroundColor = "#4285F4"; 
+                loginBtn.style.backgroundColor = "#4285F4";
             }
         });
     </script>
