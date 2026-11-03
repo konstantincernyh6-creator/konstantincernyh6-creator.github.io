@@ -118,58 +118,62 @@
         </div>
     </div>
 
-    <script type="module">
-        // ИСПРАВЛЕНО: Указаны точные и корректные CDN ссылки для Firebase версии 10.x
-        import { initializeApp } from "firebase.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://gstatic.com";
+<script type="module">
+    // ИСПРАВЛЕНО: Указаны точные, полные и рабочие CDN ссылки для Firebase версии 10.x
+    import { initializeApp } from "https://gstatic.com";
+    import { 
+        getAuth, 
+        signInWithPopup, 
+        GoogleAuthProvider, 
+        signOut, 
+        onAuthStateChanged 
+    } from "https://gstatic.com";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDppXugKlNCW9eywWLJ65plk8k0Zq2wDxA",
-            authDomain: "kode-1-76934.firebaseapp.com",
-            projectId: "kode-1-76934",
-            storageBucket: "kode-1-76934.firebasestorage.app",
-            messagingSenderId: "872202056385",
-            appId: "1:872202056385:web:9c798e72ee00b703099a40",
-            measurementId: "G-CWCMHJGJM0"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyDppXugKlNCW9eywWLJ65plk8k0Zq2wDxA",
+        authDomain: "kode-1-76934.firebaseapp.com",
+        projectId: "kode-1-76934",
+        storageBucket: "kode-1-76934.firebasestorage.app",
+        messagingSenderId: "872202056385",
+        appId: "1:872202056385:web:9c798e72ee00b703099a40",
+        measurementId: "G-CWCMHJGJM0"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-        const loginBtn = document.getElementById('google-login');
-        const userProfile = document.getElementById('user-profile');
+    const loginBtn = document.getElementById('google-login');
+    const userProfile = document.getElementById('user-profile');
 
-        // Логика кнопки (Вход / Выход)
-        loginBtn.addEventListener('click', () => {
-            if (!auth.currentUser) {
-                signInWithPopup(auth, provider)
-                    .then((result) => {
-                        console.log("Успешный вход:", result.user);
-                    })
-                    .catch((error) => {
-                        console.error("Ошибка авторизации:", error.message);
-                        alert("Не удалось войти: " + error.message);
-                    });
-            } else {
-                signOut(auth).then(() => {
-                    console.log("Пользователь вышел");
+    // Логика кнопки (Вход / Выход)
+    loginBtn.addEventListener('click', () => {
+        if (!auth.currentUser) {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    console.log("Успешный вход:", result.user);
+                })
+                .catch((error) => {
+                    console.error("Ошибка авторизации:", error.message);
+                    alert("Не удалось войти: " + error.message);
                 });
-            }
-        });
+        } else {
+            signOut(auth).then(() => {
+                console.log("Пользователь вышел");
+            });
+        }
+    });
 
-        // Отслеживание состояния пользователя (Вошел или Вышел)
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userProfile.textContent = `Привет, ${user.displayName}!`;
-                loginBtn.textContent = "Выйти";
-                loginBtn.style.backgroundColor = "#d9534f";
-            } else {
-                userProfile.textContent = "";
-                loginBtn.textContent = "Войти через Google";
-                loginBtn.style.backgroundColor = "#4285F4";
-            }
-        });
-    </script>
-</body>
-</html>
+    // Отслеживание состояния пользователя (Вошел или Вышел)
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            userProfile.textContent = `Привет, ${user.displayName}!`;
+            loginBtn.textContent = "Выйти";
+            loginBtn.style.backgroundColor = "#d9534f"; // Меняем цвет на красный при выходе
+        } else {
+            userProfile.textContent = "";
+            loginBtn.textContent = "Войти через Google";
+            loginBtn.style.backgroundColor = "#4285F4"; // Возвращаем синий бренд-цвет Google
+        }
+    });
+</script>
