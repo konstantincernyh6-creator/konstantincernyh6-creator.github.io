@@ -88,40 +88,21 @@
 </head>
 <body>
 
-    <h1>Легендарные Мощные Машины</h1>
+<h1>Легендарные Мощные Машины</h1>
 
-    <!-- Кнопка авторизации и блок для имени пользователя -->
     <div id="user-profile" class="user-info"></div>
-    <button type="button" id="google-login" class="auth-btn">Войти через Google</button>
+    
+    <div id="auth-actions" class="auth-buttons-wrapper">
+        <button type="button" id="google-login" class="auth-btn google-btn">Войти через Google</button>
+        <button type="button" id="github-login" class="auth-btn github-btn">Войти через GitHub</button>
+    </div>
+    <button type="button" id="logout-btn" class="auth-btn logout-btn" style="display: none;">Выйти</button>
 
     <div class="container">
-        <div class="card">
-            <img src="https://110km.ru" alt="Car">
-            <div class="info">
-                <h3>Neon GT</h3>
-                <p>Быстрый спорткар с футуристичным дизайном и невероятной динамикой разгона.</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://autotuni.ru" alt="Car">
-            <div class="info">
-                <h3>Viper R</h3>
-                <p>Трековый зверь с ревом мощного мотора и агрессивным аэродинамическим обвесом.</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="https://top-tuning.ru" alt="Car">
-            <div class="info">
-                <h3>Shadow X</h3>
-                <p>Черная молния для ночных дорог. Совершенство стиля и высоких технологий.</p>
-            </div>
-        </div>
+        <!-- Поместите сюда ваши три блока <div class="card">...</div> (Neon GT, Viper R, Shadow X) -->
     </div>
 
     <script type="module">
-        // ИСПРАВЛЕНО: Указаны точные, абсолютные CDN-пути к конкретным файлам библиотек Firebase v10
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
             getAuth, 
@@ -132,7 +113,6 @@
             onAuthStateChanged 
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // Конфигурация вашего проекта Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDppXugKlNCW9eywWLJ65plk8k0Zq2wDxA",
             authDomain: "kode-1-76934.firebaseapp.com",
@@ -143,44 +123,43 @@
             measurementId: "G-YXTPSXDFVK"
         };
 
-        // Инициализация сервисов
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+        
+        const googleProvider = new GoogleAuthProvider();
+        const githubProvider = new GithubAuthProvider();
 
-        const loginBtn = document.getElementById('google-login');
+        const googleLoginBtn = document.getElementById('google-login');
+        const githubLoginBtn = document.getElementById('github-login');
+        const logoutBtn = document.getElementById('logout-btn');
+        const authActions = document.getElementById('auth-actions');
         const userProfile = document.getElementById('user-profile');
 
-        // Логика кнопки (Вход / Выход)
-        loginBtn.addEventListener('click', () => {
-            if (!auth.currentUser) {
-                signInWithPopup(auth, provider)
-                    .then((result) => {
-                        console.log("Успешный вход:", result.user);
-                    })
-                    .catch((error) => {
-                        console.error("Ошибка авторизации:", error.code, error.message);
-                        alert("Не удалось войти: " + error.message);
-                    });
-            } else {
-                signOut(auth).then(() => {
-                    console.log("Пользователь вышел");
-                }).catch((error) => {
-                    console.error("Ошибка при выходе:", error);
-                });
-            }
+        googleLoginBtn.addEventListener('click', () => {
+            signInWithPopup(auth, googleProvider).catch((err) => {
+                alert("Ошибка Google: " + err.message);
+            });
         });
 
-        // Отслеживание состояния пользователя (Вошел или Вышел)
+        githubLoginBtn.addEventListener('click', () => {
+            signInWithPopup(auth, githubProvider).catch((err) => {
+                alert("Ошибка GitHub: " + err.message);
+            });
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).catch((err) => console.error("Ошибка при выходе:", err));
+        });
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                userProfile.textContent = `Привет, ${user.displayName}!`;
-                loginBtn.textContent = "Выйти";
-                loginBtn.style.backgroundColor = "#d9534f";
+                userProfile.textContent = `Привет, ${user.displayName || user.email}!`;
+                authActions.style.display = "none";
+                logoutBtn.style.display = "block";
             } else {
                 userProfile.textContent = "";
-                loginBtn.textContent = "Войти через Google";
-                loginBtn.style.backgroundColor = "#4285F4";
+                authActions.style.display = "flex";
+                logoutBtn.style.display = "none";
             }
         });
     </script>
