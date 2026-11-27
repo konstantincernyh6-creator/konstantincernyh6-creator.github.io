@@ -129,6 +129,8 @@
         import { 
             getAuth, 
             signInWithPopup, 
+            signInWithRedirect, // <-- ДОБАВЛЕНО: для перенаправления
+            getRedirectResult,  // <-- ДОБАВЛЕНО: для получения результата после возврата
             GoogleAuthProvider,
             GithubAuthProvider,
             signOut, 
@@ -158,40 +160,63 @@
         const authActions = document.getElementById('auth-actions');
         const userProfile = document.getElementById('user-profile');
 
+        // --- ВХОД ЧЕРЕЗ GOOGLE (остается без изменений) ---
         googleLoginBtn.addEventListener('click', () => {
             signInWithPopup(auth, googleProvider).catch((err) => {
                 alert("Ошибка Google: " + err.message);
             });
         });
 
-       githubLoginBtn.addEventListener('click', async () => {
-    try {
-        await signInWithPopup(auth, githubProvider);
-    } catch (error) {
-        if (error.code === 'auth/account-exists-with-different-credential') {
-            const email = error.customData.email;
-            const pendingCred = error.customData.credential; // Сохраняем данные GitHub
-
-            alert(`Аккаунт с почтой ${email} уже существует через Google.\nСейчас мы попросим вас войти через Google, чтобы привязать к нему GitHub.`);
-
+        // --- ВХОД ЧЕРЕЗ GITHUB С ПЕРЕНАПРАВЛЕНИЕМ ---
+        githubLoginBtn.addEventListener('click', async () => {
             try {
-                // Шаг 1: Просим войти через Google
-                const result = await signInWithPopup(auth, googleProvider);
-                
-                // Шаг 2: Привязываем сохраненные данные GitHub к аккаунту Google
-                await linkWithCredential(result.user, pendingCred);
-                
-                alert("Успешно! Теперь вы можете входить как через Google, так и через GitHub.");
-            } catch (linkError) {
-                alert("Не удалось связать аккаунты: " + linkError.message);
-            }
-        } else {
-            alert("Ошибка GitHub: " + error.message);
-        }
-    }
-});
+                await signInWithPopup(auth, githubProvider);
+            } catch (error) {
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    const email = error.customData.email;
+                    const pendingCred = GithubAuthProvider.credentialFromError(error);
 
-                logoutBtn.addEventListener('click', () => {
+                    // Сохраняем токен GitHub в память браузера, чтобы он не пропал при перезагрузке
+                    sessionStorage.setItem('pendingGithubToken', pendingCred.accessToken);
+                    sessionStorage.setItem('pendingGithubEmail', email);
+
+                    alert(`Аккаунт с почтой ${email} уже существует.\nСейчас вы будете перенаправлены на страницу входа через Google, чтобы привязать к нему GitHub.`);
+
+                    // Запускаем перенаправление вместо всплывающего окна
+                    await signInWithRedirect(auth, googleProvider);
+                } else {
+                    alert("Ошибка GitHub: " + error.message);
+                }
+            }
+        });
+
+        // --- ПРОВЕРКА РЕЗУЛЬТАТА ПОСЛЕ ВОЗВРАТА С GOOGLE ---
+        // Этот код срабатывает автоматически при загрузке страницы после редиректа
+        getRedirectResult(auth).then(async (result) => {
+            if (result) {
+                const pendingToken = sessionStorage.getItem('pendingGithubToken');
+                
+                if (pendingToken) {
+                    try {
+                        // Восстанавливаем данные GitHub и привязываем их
+                        const pendingCred = GithubAuthProvider.credential(pendingToken);
+                        await linkWithCredential(result.user, pendingCred);
+                        alert("Успешно! Аккаунты связаны. Теперь вы можете входить через GitHub или Google.");
+                    } catch (linkError) {
+                        alert("Не удалось связать аккаунты: " + linkError.message);
+                    } finally {
+                        // Обязательно очищаем память после завершения
+                        sessionStorage.removeItem('pendingGithubToken');
+                        sessionStorage.removeItem('pendingGithubEmail');
+                    }
+                }
+            }
+        }).catch((error) => {
+            console.error("Ошибка при возврате с редиректа:", error);
+        });
+
+        // --- ВЫХОД И ОТОБРАЖЕНИЕ ПРОФИЛЯ ---
+        logoutBtn.addEventListener('click', () => {
             signOut(auth).catch((err) => console.error("Ошибка при выходе:", err));
         });
 
