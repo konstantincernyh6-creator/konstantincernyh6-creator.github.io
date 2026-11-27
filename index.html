@@ -132,7 +132,8 @@
             GoogleAuthProvider,
             GithubAuthProvider,
             signOut, 
-            onAuthStateChanged 
+            onAuthStateChanged,
+            linkWithCredentia
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -163,27 +164,29 @@
             });
         });
 
-        githubLoginBtn.addEventListener('click', () => {
-            signInWithPopup(auth, githubProvider).catch((err) => {
-                alert("Ошибка GitHub: " + err.message);
-            });
-        });
+       githubLoginBtn.addEventListener('click', async () => {
+    try {
+        await signInWithPopup(auth, githubProvider);
+    } catch (error) {
+        if (error.code === 'auth/account-exists-with-different-credential') {
+            const email = error.customData.email;
+            const pendingCred = error.customData.credential; // Сохраняем данные GitHub
 
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).catch((err) => console.error("Ошибка при выходе:", err));
-        });
+            alert(`Аккаунт с почтой ${email} уже существует через Google.\nСейчас мы попросим вас войти через Google, чтобы привязать к нему GitHub.`);
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userProfile.textContent = `Привет, ${user.displayName || user.email}!`;
-                authActions.style.display = "none";
-                logoutBtn.style.display = "block";
-            } else {
-                userProfile.textContent = "";
-                authActions.style.display = "flex";
-                logoutBtn.style.display = "none";
+            try {
+                // Шаг 1: Просим войти через Google
+                const result = await signInWithPopup(auth, googleProvider);
+                
+                // Шаг 2: Привязываем сохраненные данные GitHub к аккаунту Google
+                await linkWithCredential(result.user, pendingCred);
+                
+                alert("Успешно! Теперь вы можете входить как через Google, так и через GitHub.");
+            } catch (linkError) {
+                alert("Не удалось связать аккаунты: " + linkError.message);
             }
-        });
-    </script>
-</body>
-</html>
+        } else {
+            alert("Ошибка GitHub: " + error.message);
+        }
+    }
+});
